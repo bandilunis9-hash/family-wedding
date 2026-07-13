@@ -1,24 +1,438 @@
-FAMILY WEDDING PROJECT
-○○家 결혼 준비
-◆
-디데이
-예식장
-일정
-역할분담
-체크리스트
-예산
-초대고객
-가족의견
-🔒 아버지전용
-오늘의 요약
-선택한 결혼 건의 준비 현황입니다.
+<!DOCTYPE html>
+<html lang="ko" data-daughter="1">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>○○家 결혼 준비</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&family=Pretendard:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#E9F1F8;
+    --bg-deep:#D7E5F1;
+    --ink:#1C2B3A;
+    --ink-soft:#51667A;
+    --wine:#C1573F;        /* 딸1 */
+    --wine-soft:rgba(193,87,63,0.14);
+    --indigo:#2B4C73;      /* 딸2 */
+    --indigo-soft:rgba(43,76,115,0.14);
+    --gold:#A9823E;
+    --gold-line:#C9B98A;
+    --line:#C3D5E3;
+    --accent:var(--wine);
+    --accent-soft:var(--wine-soft);
+  }
+  html[data-daughter="2"]{ --accent:var(--indigo); --accent-soft:var(--indigo-soft); }
 
-NEXT ACTION
-예식장 유형 결정 — [예식장] 탭에서 바로 선택 가능
-진행중
-THIS MONTH
-상견례 일정 조율 시작
-대기
-예식일 미확정으로 D-day는 예상 시기(2027.06 / 2028.01) 1일 기준 참고값입니다.
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink); font-size:16px;
+    font-family:'Pretendard',sans-serif; -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:var(--accent-soft); }
+  .serif{ font-family:'Noto Serif KR',serif; }
+  .mono{ font-family:'IBM Plex Mono',monospace; }
 
-○○家 결혼 준비 · 가족 전용 비공개 페이지
+  .divider{ display:flex; align-items:center; gap:10px; margin:18px 0; color:var(--gold); }
+  .divider::before, .divider::after{ content:''; flex:1; height:1px; background:var(--gold-line); }
+  .divider span{ font-size:12.5px; }
+
+  header.top{ position:sticky; top:0; z-index:30; background:var(--bg); border-bottom:1px solid var(--line); }
+  .top-inner{ max-width:720px; margin:0 auto; padding:28px 22px 0; }
+  .eyebrow{ font-size:12px; color:var(--gold); letter-spacing:0.32em; text-align:center; }
+  h1.brand{ font-family:'Noto Serif KR',serif; font-weight:600; font-size:27px; text-align:center; margin:8px 0 0; letter-spacing:0.02em; color:var(--ink); }
+
+  .seal-row{ display:flex; justify-content:center; gap:36px; margin:26px 0 6px; }
+  .seal{ text-align:center; cursor:pointer; user-select:none; opacity:0.45; transition:opacity .35s ease; }
+  .seal.active{ opacity:1; }
+  .seal-ring{
+    width:56px; height:56px; border-radius:50%; margin:0 auto 8px;
+    display:flex; align-items:center; justify-content:center;
+    border:1.4px solid var(--line); font-family:'Noto Serif KR',serif; font-size:21px;
+    transition: border-color .35s ease, color .35s ease, box-shadow .35s ease;
+    color:var(--ink-soft);
+  }
+  .seal[data-d="1"].active .seal-ring{ border-color:var(--wine); color:var(--wine); box-shadow:0 0 0 3px var(--wine-soft); }
+  .seal[data-d="2"].active .seal-ring{ border-color:var(--indigo); color:var(--indigo); box-shadow:0 0 0 3px var(--indigo-soft); }
+  .seal .label{ font-size:13px; color:var(--ink-soft); letter-spacing:0.05em; }
+  .seal .dday{ font-family:'IBM Plex Mono',monospace; font-size:16px; margin-top:2px; }
+  .seal[data-d="1"] .dday{ color:var(--wine); } .seal[data-d="2"] .dday{ color:var(--indigo); }
+
+  nav.tabs{
+    max-width:720px; margin:18px auto 0; padding:0 22px;
+    display:flex; gap:4px; overflow-x:auto; scrollbar-width:none; justify-content:center;
+  }
+  nav.tabs::-webkit-scrollbar{ display:none; }
+  nav.tabs button{
+    flex:none; background:none; border:none; cursor:pointer;
+    font-size:14.5px; color:var(--ink-soft); padding:10px 10px 12px;
+    border-bottom:2px solid transparent; white-space:nowrap; letter-spacing:0.02em;
+  }
+  nav.tabs button.active{ color:var(--ink); border-bottom-color:var(--accent); font-weight:600; }
+  nav.tabs button.lock{ color:var(--gold); }
+  nav.tabs button.lock.active{ border-bottom-color:var(--gold); }
+
+  main{ max-width:720px; margin:0 auto; padding:34px 22px 90px; }
+  section.panel{ display:none; animation:fade .35s ease; }
+  section.panel.active{ display:block; }
+  @keyframes fade{ from{opacity:0; transform:translateY(5px);} to{opacity:1; transform:none;} }
+  .panel h2{ font-family:'Noto Serif KR',serif; font-weight:600; font-size:22px; margin:0 0 4px; color:var(--ink); }
+  .panel .lede{ color:var(--ink-soft); font-size:14.5px; margin:0 0 24px; }
+
+  .timeline{ position:relative; padding-left:24px; }
+  .timeline::before{ content:''; position:absolute; left:5px; top:4px; bottom:4px; width:1px; background:var(--line); }
+  .t-item{ position:relative; padding:0 0 24px; }
+  .t-item::before{
+    content:''; position:absolute; left:-24px; top:2px; width:9px; height:9px; border-radius:50%;
+    background:var(--bg); border:1.6px solid var(--accent);
+  }
+  .t-item .d{ font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--accent); letter-spacing:0.05em; }
+  .t-item .name{ font-size:16.5px; margin:3px 0 4px; }
+  .t-item .status{ display:inline-block; font-size:11.5px; padding:2px 8px; border-radius:2px; background:var(--bg-deep); color:var(--ink-soft); }
+
+  select, input[type="text"]{
+    font-family:'Pretendard',sans-serif; background:var(--bg-deep); color:var(--ink);
+    border:1px solid var(--line); border-radius:2px; padding:11px 13px; font-size:15.5px;
+  }
+  select#who{ width:100%; margin-bottom:20px; }
+  .assign-row{ display:flex; justify-content:space-between; gap:10px; padding:13px 0; border-bottom:1px solid var(--line); font-size:15px; }
+  .assign-row.hide{ display:none; }
+  .who-badge{ font-size:11.5px; color:#fff; background:var(--ink-soft); padding:3px 10px; border-radius:2px; white-space:nowrap; }
+
+  .check-cat{ margin-bottom:22px; border:1px solid var(--line); border-radius:3px; padding:14px 16px; background:var(--bg-deep); }
+  .check-cat .row{ display:flex; justify-content:space-between; font-size:15px; margin-bottom:9px; }
+  .bar{ height:6px; background:var(--line); border-radius:3px; overflow:hidden; margin-bottom:12px; }
+  .bar > div{ height:100%; background:var(--accent); transition:width .3s ease; }
+  .check-item{ display:flex; align-items:center; gap:9px; font-size:15px; padding:6px 0; color:var(--ink-soft); }
+  .check-item input{ accent-color:var(--accent); width:17px; height:17px; }
+  .check-item.done{ color:var(--ink); text-decoration:line-through; text-decoration-color:var(--line); }
+
+  table{ width:100%; border-collapse:collapse; font-size:14.5px; }
+  table th, table td{ text-align:left; padding:10px 6px; border-bottom:1px solid var(--line); }
+  table th{ color:var(--ink-soft); font-weight:500; font-size:12px; letter-spacing:0.05em; }
+  td[contenteditable="true"]{ outline:none; cursor:text; }
+  td[contenteditable="true"]:focus{ background:var(--wine-soft); border-radius:2px; }
+  .side-badge{ font-size:11.5px; padding:2px 9px; border-radius:2px; background:var(--bg-deep); border:1px solid var(--line); }
+  .add-row-form{ display:flex; gap:8px; margin-top:14px; flex-wrap:wrap; }
+  .add-row-form input, .add-row-form select{ flex:1; min-width:100px; }
+  .btn{ background:var(--accent); color:#fff; border:none; padding:10px 18px; font-size:14.5px; font-weight:600; cursor:pointer; border-radius:2px; }
+  .btn.ghost{ background:none; border:1px solid var(--line); color:var(--ink-soft); }
+  .del-x{ cursor:pointer; color:var(--ink-soft); font-size:14px; }
+
+  .venue-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .venue-card{
+    border:1px solid var(--line); border-radius:3px; padding:16px; cursor:pointer;
+    background:var(--bg-deep); transition:border-color .2s ease, box-shadow .2s ease;
+  }
+  .venue-card.selected{ border-color:var(--accent); box-shadow:0 0 0 2px var(--accent-soft); }
+  .venue-card .vname{ font-size:16px; margin-bottom:4px; }
+  .venue-card .vnote{ font-size:13px; color:var(--ink-soft); }
+
+  .note{ margin-top:18px; font-size:13px; color:var(--ink-soft); border-left:2px solid var(--gold-line); padding-left:11px; }
+
+  .opinion-embed{ border:1px solid var(--line); border-radius:3px; overflow:hidden; background:var(--bg-deep); }
+  .opinion-embed iframe{ width:100%; height:640px; border:none; display:block; }
+
+  .lockbox{ border:1px dashed var(--gold); padding:30px 22px; text-align:center; border-radius:3px; background:var(--bg-deep); }
+  .lockbox{ font-size:15px; }
+  .lockbox .glyph{ font-size:24px; color:var(--gold); margin-bottom:10px; }
+  .lockbox input{ display:block; width:100%; max-width:220px; margin:14px auto 10px; text-align:center; letter-spacing:0.2em; font-family:'IBM Plex Mono',monospace; font-size:15px; }
+  .lockbox button{ background:var(--gold); color:#fff; border:none; padding:10px 26px; font-size:14.5px; cursor:pointer; border-radius:2px; font-weight:600; }
+  .lockbox .hint{ font-size:12px; color:var(--ink-soft); margin-top:16px; }
+  #fatherContent{ display:none; }
+  #fatherContent td.amt{ font-family:'IBM Plex Mono',monospace; }
+
+  footer{ max-width:720px; margin:0 auto; padding:26px 22px 60px; color:var(--ink-soft); font-size:12px; text-align:center; border-top:1px solid var(--line); }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="eyebrow">FAMILY WEDDING PROJECT</div>
+    <h1 class="brand">○○家 결혼 준비</h1>
+
+    <div class="seal-row" id="sealRow">
+      <div class="seal active" data-d="1">
+        <div class="seal-ring serif">壹</div>
+        <div class="label">첫째</div>
+        <div class="dday mono" id="dday1">D-XXX</div>
+      </div>
+      <div class="seal" data-d="2">
+        <div class="seal-ring serif">貳</div>
+        <div class="label">둘째</div>
+        <div class="dday mono" id="dday2">D-XXX</div>
+      </div>
+    </div>
+    <div class="divider"><span>◆</span></div>
+  </div>
+
+  <nav class="tabs" id="tabs">
+    <button data-tab="dday" class="active">디데이</button>
+    <button data-tab="venue">예식장</button>
+    <button data-tab="timeline">일정</button>
+    <button data-tab="assign">역할분담</button>
+    <button data-tab="checklist">체크리스트</button>
+    <button data-tab="budget">예산</button>
+    <button data-tab="guest">초대고객</button>
+    <button data-tab="voice">가족의견</button>
+    <button data-tab="father" class="lock">🔒 아버지전용</button>
+  </nav>
+</header>
+
+<main>
+
+  <section class="panel active" id="panel-dday">
+    <h2>오늘의 요약</h2>
+    <p class="lede">선택한 결혼 건의 준비 현황입니다.</p>
+    <div class="timeline">
+      <div class="t-item"><div class="d">NEXT ACTION</div><div class="name">예식장 유형 결정 — [예식장] 탭에서 바로 선택 가능</div><span class="status">진행중</span></div>
+      <div class="t-item"><div class="d">THIS MONTH</div><div class="name">상견례 일정 조율 시작</div><span class="status">대기</span></div>
+    </div>
+    <p class="note">예식일 미확정으로 D-day는 예상 시기(2027.06 / 2028.01) 1일 기준 참고값입니다.</p>
+  </section>
+
+  <!-- 예식장: 선택 가능 -->
+  <section class="panel" id="panel-venue">
+    <h2>예식장 선택</h2>
+    <p class="lede">후보 유형 중 하나를 눌러 선택하세요 (마음이 바뀌면 언제든 다시 클릭)</p>
+    <div class="venue-grid" id="venueGrid">
+      <div class="venue-card" data-v="일반웨딩홀"><div class="vname">일반웨딩홀</div><div class="vnote">가성비, 예약 여유 있음</div></div>
+      <div class="venue-card" data-v="동우회웨딩홀"><div class="vname">동우회웨딩홀</div><div class="vnote">지인 할인, 좌석수 제한적</div></div>
+      <div class="venue-card" data-v="사내웨딩홀"><div class="vname">사내웨딩홀</div><div class="vnote">복지 혜택, 예약 경쟁 있음</div></div>
+      <div class="venue-card" data-v="호텔웨딩홀"><div class="vname">호텔웨딩홀</div><div class="vnote">격식 있음, 1년~1.5년 전 예약 필요</div></div>
+    </div>
+    <p class="note" id="venueSelectedNote">아직 선택되지 않았습니다.</p>
+  </section>
+
+  <section class="panel" id="panel-timeline">
+    <h2>준비 일정</h2>
+    <p class="lede">예상 예식일 기준 역산 (계약 진행에 따라 조정)</p>
+    <div class="timeline">
+      <div class="t-item"><div class="d">D-365</div><div class="name">상견례</div><span class="status">예정</span></div>
+      <div class="t-item"><div class="d">D-300</div><div class="name">예식장 계약 (유형 결정 → 계약금)</div><span class="status">검토중</span></div>
+      <div class="t-item"><div class="d">D-240</div><div class="name">스드메 계약</div><span class="status">대기</span></div>
+      <div class="t-item"><div class="d">D-180</div><div class="name">예단 · 예물 협의</div><span class="status">대기</span></div>
+      <div class="t-item"><div class="d">D-90</div><div class="name">청첩장 제작 · 하객 명단 정리</div><span class="status">대기</span></div>
+      <div class="t-item"><div class="d">D-30</div><div class="name">혼수 · 신혼집 최종 점검</div><span class="status">대기</span></div>
+    </div>
+  </section>
+
+  <!-- 역할분담: 드롭다운 필터 실제 동작 -->
+  <section class="panel" id="panel-assign">
+    <h2>역할분담</h2>
+    <p class="lede">내 이름으로 담당 업무 찾기 — 선택하면 아래 목록이 걸러집니다</p>
+    <select id="who" onchange="filterAssign(this.value)">
+      <option value="">전체 보기</option>
+      <option>아버지</option><option>어머니</option><option>딸</option><option>사위 예정자</option>
+    </select>
+    <div id="assignList">
+      <div class="assign-row" data-who="아버지"><span>예식장 계약 · 계약금 검토</span><span class="who-badge">아버지</span></div>
+      <div class="assign-row" data-who="어머니"><span>예단 · 예물 상견례 조율</span><span class="who-badge">어머니</span></div>
+      <div class="assign-row" data-who="딸"><span>스드메 · 청첩장 디자인 선택</span><span class="who-badge">딸</span></div>
+      <div class="assign-row" data-who="사위 예정자"><span>신혼집 계약 확인</span><span class="who-badge">사위 예정자</span></div>
+    </div>
+  </section>
+
+  <!-- 체크리스트: 실제 체크 가능, 진행률 자동 계산 -->
+  <section class="panel" id="panel-checklist">
+    <h2>체크리스트</h2>
+    <p class="lede">항목을 체크하면 진행률이 바로 갱신됩니다</p>
+    <div class="check-cat" data-cat="예식장">
+      <div class="row"><span>예식장</span><span class="pct">0%</span></div>
+      <div class="bar"><div style="width:0%"></div></div>
+      <label class="check-item"><input type="checkbox" onchange="updateCat(this)"> 유형 결정</label>
+      <label class="check-item"><input type="checkbox" onchange="updateCat(this)"> 계약금 납부</label>
+      <label class="check-item"><input type="checkbox" onchange="updateCat(this)"> 계약서 서명</label>
+    </div>
+    <div class="check-cat" data-cat="예단예물">
+      <div class="row"><span>예단 · 예물</span><span class="pct">0%</span></div>
+      <div class="bar"><div style="width:0%"></div></div>
+      <label class="check-item"><input type="checkbox" onchange="updateCat(this)"> 품목 상견례 협의</label>
+      <label class="check-item"><input type="checkbox" onchange="updateCat(this)"> 예물 구매</label>
+    </div>
+    <div class="check-cat" data-cat="스드메">
+      <div class="row"><span>스드메</span><span class="pct">0%</span></div>
+      <div class="bar"><div style="width:0%"></div></div>
+      <label class="check-item"><input type="checkbox" onchange="updateCat(this)"> 업체 계약</label>
+      <label class="check-item"><input type="checkbox" onchange="updateCat(this)"> 촬영 완료</label>
+    </div>
+    <div class="check-cat" data-cat="혼수">
+      <div class="row"><span>혼수</span><span class="pct">0%</span></div>
+      <div class="bar"><div style="width:0%"></div></div>
+      <label class="check-item"><input type="checkbox" onchange="updateCat(this)"> 가전 구매</label>
+      <label class="check-item"><input type="checkbox" onchange="updateCat(this)"> 신혼집 정리</label>
+    </div>
+    <p class="note">체크는 이 화면(브라우저)에 있는 동안만 유지되며, 새로고침하면 초기화됩니다. 가족 모두가 함께 저장하려면 별도 저장 기능(예: Firebase) 연동이 필요합니다 — 원하시면 다음 단계로 추가해드릴 수 있습니다.</p>
+  </section>
+
+  <!-- 예산: 셀 직접 수정 + 행 추가 -->
+  <section class="panel" id="panel-budget">
+    <h2>예산</h2>
+    <p class="lede">셀을 클릭하면 바로 수정할 수 있습니다</p>
+    <table id="budgetTable">
+      <tr><th>카테고리</th><th>항목</th><th>계획</th><th>비고</th><th></th></tr>
+      <tr><td contenteditable="true">예식장</td><td contenteditable="true">대관료</td><td contenteditable="true">TBD</td><td contenteditable="true">유형 결정 후 확정</td><td class="del-x" onclick="this.closest('tr').remove()">✕</td></tr>
+      <tr><td contenteditable="true">예단·예물</td><td contenteditable="true">-</td><td contenteditable="true">TBD</td><td contenteditable="true">-</td><td class="del-x" onclick="this.closest('tr').remove()">✕</td></tr>
+      <tr><td contenteditable="true">스드메</td><td contenteditable="true">-</td><td contenteditable="true">TBD</td><td contenteditable="true">-</td><td class="del-x" onclick="this.closest('tr').remove()">✕</td></tr>
+      <tr><td contenteditable="true">신혼여행</td><td contenteditable="true">-</td><td contenteditable="true">TBD</td><td contenteditable="true">-</td><td class="del-x" onclick="this.closest('tr').remove()">✕</td></tr>
+    </table>
+    <button class="btn ghost" style="margin-top:14px;" onclick="addRow('budgetTable',4)">+ 항목 추가</button>
+    <p class="note">증여·세금 관련 내역은 🔒 아버지전용 탭에서 별도 관리합니다. 수정 내용은 새로고침 시 초기화됩니다.</p>
+  </section>
+
+  <!-- 초대고객: 추가/삭제 -->
+  <section class="panel" id="panel-guest">
+    <h2>초대고객</h2>
+    <p class="lede">하객 명단 · 관계 관리 (금전 정보 미포함)</p>
+    <table id="guestTable">
+      <tr><th>이름</th><th>구분</th><th>관계</th><th></th></tr>
+    </table>
+    <div class="add-row-form">
+      <input type="text" id="gName" placeholder="이름">
+      <select id="gSide"><option>신랑측</option><option>신부측</option></select>
+      <input type="text" id="gRelation" placeholder="관계 (예: 대학 동기)">
+      <button class="btn" onclick="addGuest()">추가</button>
+    </div>
+    <p class="note">추가한 명단은 새로고침 시 초기화됩니다.</p>
+  </section>
+
+  <section class="panel" id="panel-voice">
+    <h2>가족의견</h2>
+    <p class="lede">이 자리에서 바로 의견을 남겨주세요. 이동 없이 아래에서 제출됩니다.</p>
+    <div class="opinion-embed">
+      <iframe id="opinionFrame" src="about:blank" title="가족 의견 입력"></iframe>
+    </div>
+    <p class="note" id="opinionSetupNote">
+      ※ 아직 실제 폼이 연결되지 않았습니다. 구글폼 생성 후 "보내기 → &lt;&gt; 퍼가기(embed)" 코드의 <span class="mono">src</span> 주소를
+      코드의 FORM_EMBED_URL 자리에 넣으면 바로 이 화면 안에서 입력·제출됩니다.
+    </p>
+  </section>
+
+  <section class="panel" id="panel-father">
+    <h2>🔒 아버지 전용</h2>
+    <p class="lede">증여 · 축의금 등 민감 재무 정보</p>
+    <div class="lockbox" id="lockbox">
+      <div class="glyph">🔒</div>
+      <div>접근 코드를 입력하세요</div>
+      <input type="password" id="pw" placeholder="••••">
+      <button onclick="unlock()">열기</button>
+      <div class="hint">※ 프로토타입 시연용이며 실제 보안 기능은 아닙니다. 배포 시 서버 인증으로 교체 필요.</div>
+    </div>
+    <div id="fatherContent">
+      <table>
+        <tr><th>구분</th><th>항목</th><th>금액</th><th>메모</th></tr>
+        <tr><td>증여</td><td>혼인공제</td><td class="amt">TBD</td><td>1억원 한도 검토</td></tr>
+        <tr><td>축의금</td><td>정산 현황</td><td class="amt">TBD</td><td>딸별 별도 집계</td></tr>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<footer>○○家 결혼 준비 · 가족 전용 비공개 페이지</footer>
+
+<script>
+  const seals = document.querySelectorAll('.seal');
+  const html = document.documentElement;
+  function setDaughter(d){
+    html.setAttribute('data-daughter', d);
+    seals.forEach(s => s.classList.toggle('active', s.dataset.d === d));
+  }
+  seals.forEach(s => s.addEventListener('click', () => setDaughter(s.dataset.d)));
+
+  const tabBtns = document.querySelectorAll('nav.tabs button');
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('section.panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  function ddayLabel(dateStr, el){
+    const target = new Date(dateStr); const today = new Date();
+    const diff = Math.ceil((target - today) / 86400000);
+    el.textContent = diff >= 0 ? ('D-' + diff) : ('D+' + Math.abs(diff));
+  }
+  ddayLabel('2027-06-01', document.getElementById('dday1'));
+  ddayLabel('2028-01-01', document.getElementById('dday2'));
+
+  function unlock(){
+    const pw = document.getElementById('pw').value;
+    if(pw.length > 0){
+      document.getElementById('lockbox').style.display = 'none';
+      document.getElementById('fatherContent').style.display = 'block';
+    }
+  }
+
+  const FORM_EMBED_URL = "REPLACE_WITH_FORM_EMBED_URL";
+  if(FORM_EMBED_URL && FORM_EMBED_URL.indexOf('http') === 0){
+    document.getElementById('opinionFrame').src = FORM_EMBED_URL;
+    document.getElementById('opinionSetupNote').style.display = 'none';
+  }
+
+  // 예식장 선택
+  document.querySelectorAll('.venue-card').forEach(card => {
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.venue-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      document.getElementById('venueSelectedNote').textContent = '현재 선택: ' + card.dataset.v + ' (언제든 다시 클릭해 변경 가능)';
+    });
+  });
+
+  // 역할분담 필터
+  function filterAssign(who){
+    document.querySelectorAll('#assignList .assign-row').forEach(row => {
+      row.classList.toggle('hide', who && row.dataset.who !== who);
+    });
+  }
+
+  // 체크리스트 진행률
+  function updateCat(checkboxEl){
+    const cat = checkboxEl.closest('.check-cat');
+    const boxes = cat.querySelectorAll('input[type="checkbox"]');
+    const checked = cat.querySelectorAll('input[type="checkbox"]:checked');
+    const pct = Math.round((checked.length / boxes.length) * 100);
+    cat.querySelector('.pct').textContent = pct + '%';
+    cat.querySelector('.bar > div').style.width = pct + '%';
+    checkboxEl.closest('.check-item').classList.toggle('done', checkboxEl.checked);
+  }
+
+  // 예산 행 추가
+  function addRow(tableId, cols){
+    const table = document.getElementById(tableId);
+    const tr = document.createElement('tr');
+    for(let i=0;i<cols;i++){
+      const td = document.createElement('td');
+      td.contentEditable = "true";
+      td.textContent = "";
+      tr.appendChild(td);
+    }
+    const delTd = document.createElement('td');
+    delTd.className = 'del-x';
+    delTd.textContent = '✕';
+    delTd.onclick = () => tr.remove();
+    tr.appendChild(delTd);
+    table.appendChild(tr);
+  }
+
+  // 초대고객 추가
+  function addGuest(){
+    const name = document.getElementById('gName').value.trim();
+    const side = document.getElementById('gSide').value;
+    const relation = document.getElementById('gRelation').value.trim();
+    if(!name) return;
+    const table = document.getElementById('guestTable');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${name}</td><td><span class="side-badge">${side}</span></td><td>${relation || '-'}</td><td class="del-x">✕</td>`;
+    tr.querySelector('.del-x').onclick = () => tr.remove();
+    table.appendChild(tr);
+    document.getElementById('gName').value = '';
+    document.getElementById('gRelation').value = '';
+  }
+</script>
+
+</body>
+</html>
