@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ko" data-daughter="1">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>○○家 결혼 준비 워크샵</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Song+Myung&family=Noto+Serif+KR:wght@400;600;700&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F5F0E4;
+    --paper-deep:#EDE5D3;
+    --ink:#20262F;
+    --ink-soft:#5B5F66;
+    --celadon:#5F7F68;
+    --hongsil:#B8433C;      /* 딸1 - 홍실 */
+    --hongsil-soft:#E9CFC9;
+    --cheongsil:#2B5A82;    /* 딸2 - 청실 */
+    --cheongsil-soft:#CBDCE6;
+    --gold:#93731F;
+    --line:#D8CDB4;
+    --accent: var(--hongsil);
+    --accent-soft: var(--hongsil-soft);
+    --radius:2px;
+  }
+  html[data-daughter="2"]{ --accent: var(--cheongsil); --accent-soft: var(--cheongsil-soft); }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Pretendard','Noto Serif KR',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:var(--accent-soft); }
+
+  .display{ font-family:'Song Myung','Noto Serif KR',serif; }
+  .mono{ font-family:'IBM Plex Mono',monospace; letter-spacing:0.02em; }
+
+  header.top{
+    position:sticky; top:0; z-index:30;
+    background:var(--paper);
+    border-bottom:1px solid var(--line);
+  }
+  .top-inner{
+    max-width:760px; margin:0 auto; padding:22px 20px 0;
+  }
+  .brand{
+    display:flex; align-items:baseline; justify-content:space-between; gap:12px;
+  }
+  .brand h1{
+    font-size:22px; margin:0; font-weight:400; letter-spacing:0.01em;
+  }
+  .brand .eyebrow{
+    font-size:11px; color:var(--ink-soft); letter-spacing:0.18em; text-transform:uppercase;
+    margin-bottom:4px;
+  }
+
+  /* ===== 청실홍실 토글 : signature element ===== */
+  .thread-toggle{
+    display:flex; align-items:center; gap:0; margin:18px 0 14px;
+    position:relative; height:64px;
+  }
+  .thread-toggle svg{ position:absolute; left:0; top:0; width:100%; height:100%; pointer-events:none; }
+  .thread-line{
+    stroke-width:2; fill:none; stroke-dasharray:4 4;
+    transition: stroke 0.4s ease, opacity 0.4s ease;
+  }
+  .daughter-card{
+    flex:1; position:relative; z-index:2; padding:8px 4px 10px;
+    text-align:center; cursor:pointer; user-select:none;
+    border-bottom:3px solid transparent;
+    transition: border-color 0.3s ease, opacity 0.3s ease;
+    opacity:0.45;
+  }
+  .daughter-card.active{ opacity:1; }
+  .daughter-card[data-d="1"].active{ border-color:var(--hongsil); }
+  .daughter-card[data-d="2"].active{ border-color:var(--cheongsil); }
+  .daughter-card .tag{
+    font-size:10px; letter-spacing:0.14em; text-transform:uppercase;
+  }
+  .daughter-card[data-d="1"] .tag{ color:var(--hongsil); }
+  .daughter-card[data-d="2"] .tag{ color:var(--cheongsil); }
+  .daughter-card .name{ font-family:'Song Myung',serif; font-size:19px; margin:2px 0 4px; }
+  .daughter-card .dday{ font-family:'IBM Plex Mono',monospace; font-size:15px; }
+  .daughter-card .date{ font-size:11px; color:var(--ink-soft); margin-top:2px; }
+
+  nav.tabs{
+    max-width:760px; margin:0 auto; padding:0 20px;
+    display:flex; gap:2px; overflow-x:auto; scrollbar-width:none;
+    border-top:1px solid var(--line);
+  }
+  nav.tabs::-webkit-scrollbar{ display:none; }
+  nav.tabs button{
+    flex:none; background:none; border:none; cursor:pointer;
+    font-family:'Pretendard',sans-serif; font-size:13px; color:var(--ink-soft);
+    padding:12px 12px 10px; border-bottom:2px solid transparent;
+    white-space:nowrap;
+  }
+  nav.tabs button.active{ color:var(--ink); border-bottom:2px solid var(--accent); font-weight:600; }
+  nav.tabs button.lock{ color:var(--gold); }
+  nav.tabs button.lock.active{ border-bottom-color:var(--gold); }
+
+  main{ max-width:760px; margin:0 auto; padding:28px 20px 80px; }
+  section.panel{ display:none; animation:fade .3s ease; }
+  section.panel.active{ display:block; }
+  @keyframes fade{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;} }
+
+  .panel h2{
+    font-family:'Song Myung',serif; font-weight:400; font-size:20px; margin:0 0 4px;
+  }
+  .panel .lede{ color:var(--ink-soft); font-size:13px; margin:0 0 22px; }
+
+  /* 일정 */
+  .timeline{ position:relative; padding-left:22px; }
+  .timeline::before{
+    content:''; position:absolute; left:5px; top:4px; bottom:4px; width:1px; background:var(--line);
+  }
+  .t-item{ position:relative; padding:0 0 22px; }
+  .t-item::before{
+    content:''; position:absolute; left:-22px; top:3px; width:8px; height:8px; border-radius:50%;
+    background:var(--paper); border:2px solid var(--accent);
+  }
+  .t-item[data-status="완료"]::before{ background:var(--accent); }
+  .t-item .d{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--accent); }
+  .t-item .name{ font-size:14.5px; margin:2px 0 3px; }
+  .t-item .status{
+    display:inline-block; font-size:10.5px; padding:2px 7px; border-radius:20px;
+    background:var(--paper-deep); color:var(--ink-soft);
+  }
+
+  /* 역할분담 */
+  select#who{
+    width:100%; padding:10px 12px; font-size:14px; font-family:'Pretendard',sans-serif;
+    border:1px solid var(--line); background:#fff; color:var(--ink); border-radius:var(--radius);
+    margin-bottom:18px;
+  }
+  .assign-row{
+    display:flex; justify-content:space-between; gap:10px; padding:10px 0;
+    border-bottom:1px solid var(--line); font-size:13.5px;
+  }
+  .assign-row .who-badge{
+    font-size:10.5px; color:#fff; background:var(--ink-soft); padding:2px 8px; border-radius:20px;
+    white-space:nowrap; height:fit-content;
+  }
+
+  /* 체크리스트 */
+  .check-cat{ margin-bottom:20px; }
+  .check-cat .row{ display:flex; justify-content:space-between; font-size:13.5px; margin-bottom:6px; }
+  .bar{ height:6px; background:var(--paper-deep); border-radius:3px; overflow:hidden; }
+  .bar > div{ height:100%; background:var(--accent); }
+
+  /* 예산 / 초대고객 테이블 */
+  table{ width:100%; border-collapse:collapse; font-size:13px; }
+  table th, table td{ text-align:left; padding:8px 6px; border-bottom:1px solid var(--line); }
+  table th{ color:var(--ink-soft); font-weight:500; font-size:11.5px; text-transform:uppercase; letter-spacing:0.05em; }
+  .side-badge{ font-size:10.5px; padding:2px 7px; border-radius:20px; background:var(--paper-deep); }
+
+  .note{
+    margin-top:16px; font-size:12px; color:var(--ink-soft); border-left:2px solid var(--line);
+    padding-left:10px;
+  }
+
+  /* 아버지 전용 */
+  .lockbox{
+    border:1px dashed var(--gold); padding:26px 20px; text-align:center; border-radius:var(--radius);
+    background:#fff;
+  }
+  .lockbox .glyph{ font-size:26px; color:var(--gold); margin-bottom:10px; }
+  .lockbox input{
+    display:block; width:100%; max-width:220px; margin:14px auto 10px; padding:10px 12px;
+    border:1px solid var(--line); text-align:center; font-family:'IBM Plex Mono',monospace; letter-spacing:0.2em;
+  }
+  .lockbox button{
+    background:var(--gold); color:#fff; border:none; padding:9px 22px; font-size:13px; cursor:pointer; border-radius:var(--radius);
+  }
+  .lockbox .hint{ font-size:11px; color:var(--ink-soft); margin-top:14px; }
+  #fatherContent{ display:none; }
+  #fatherContent table td.amt{ font-family:'IBM Plex Mono',monospace; }
+
+  footer{
+    max-width:760px; margin:0 auto; padding:24px 20px 60px; color:var(--ink-soft); font-size:11px;
+    border-top:1px solid var(--line);
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="brand">
+      <div>
+        <div class="eyebrow">Family Wedding Project</div>
+        <h1 class="display">○○家 결혼 준비 워크샵</h1>
+      </div>
+    </div>
+
+    <div class="thread-toggle" id="threadToggle">
+      <svg viewBox="0 0 100 64" preserveAspectRatio="none">
+        <path class="thread-line" id="lineHong" d="M2,10 C 30,10 20,54 50,54 S 70,10 98,10" stroke="#B8433C"/>
+        <path class="thread-line" id="lineCheong" d="M2,54 C 30,54 20,10 50,10 S 70,54 98,54" stroke="#2B5A82"/>
+      </svg>
+      <div class="daughter-card active" data-d="1">
+        <div class="tag">홍실 · 딸1</div>
+        <div class="name display">첫째 결혼</div>
+        <div class="dday mono" id="dday1">D-XXX</div>
+        <div class="date">2027년 6월 (예정, 변경가능)</div>
+      </div>
+      <div class="daughter-card" data-d="2">
+        <div class="tag">청실 · 딸2</div>
+        <div class="name display">둘째 결혼</div>
+        <div class="dday mono" id="dday2">D-XXX</div>
+        <div class="date">2028년 1월 (예정, 변경가능)</div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="tabs" id="tabs">
+    <button data-tab="dday" class="active">디데이</button>
+    <button data-tab="timeline">일정</button>
+    <button data-tab="assign">역할분담</button>
+    <button data-tab="checklist">체크리스트</button>
+    <button data-tab="budget">예산</button>
+    <button data-tab="guest">초대고객</button>
+    <button data-tab="voice">가족의견</button>
+    <button data-tab="father" class="lock">🔒 아버지전용</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- 디데이 -->
+  <section class="panel active" id="panel-dday">
+    <h2>오늘의 요약</h2>
+    <p class="lede">선택한 딸의 결혼 준비 현황을 한눈에 봅니다.</p>
+    <div class="timeline">
+      <div class="t-item" data-status="예정"><div class="d">NEXT ACTION</div>
+        <div class="name">예식장 유형 결정 (일반 / 동우회 / 사내 / 호텔웨딩홀 비교)</div>
+        <span class="status">진행중</span>
+      </div>
+      <div class="t-item" data-status="예정"><div class="d">THIS MONTH</div>
+        <div class="name">상견례 일정 조율 시작</div>
+        <span class="status">대기</span>
+      </div>
+    </div>
+    <p class="note">예식일이 미확정이라 D-day는 각 예상 시기(2027.06 / 2028.01) 1일 기준 참고값입니다. 날짜 확정 시 자동 갱신되도록 다음 버전에서 반영 예정.</p>
+  </section>
+
+  <!-- 일정 -->
+  <section class="panel" id="panel-timeline">
+    <h2>준비 일정</h2>
+    <p class="lede">시기별 할 일 (예상 예식일 기준 역산, 실제 계약 진행에 따라 조정)</p>
+    <div class="timeline">
+      <div class="t-item" data-status="예정"><div class="d">D-365</div><div class="name">상견례</div><span class="status">예정</span></div>
+      <div class="t-item" data-status="예정"><div class="d">D-300</div><div class="name">예식장 계약 (유형 결정 → 계약금)</div><span class="status">검토중</span></div>
+      <div class="t-item" data-status="예정"><div class="d">D-240</div><div class="name">스드메(스튜디오·드레스·메이크업) 계약</div><span class="status">대기</span></div>
+      <div class="t-item" data-status="예정"><div class="d">D-180</div><div class="name">예단 · 예물 협의</div><span class="status">대기</span></div>
+      <div class="t-item" data-status="예정"><div class="d">D-90</div><div class="name">청첩장 제작 · 하객 명단 정리</div><span class="status">대기</span></div>
+      <div class="t-item" data-status="예정"><div class="d">D-30</div><div class="name">혼수 · 신혼집 최종 점검</div><span class="status">대기</span></div>
+    </div>
+  </section>
+
+  <!-- 역할분담 -->
+  <section class="panel" id="panel-assign">
+    <h2>역할분담</h2>
+    <p class="lede">내 이름으로 담당 업무 찾기</p>
+    <select id="who">
+      <option value="">이름 선택</option>
+      <option>아버지</option>
+      <option>어머니</option>
+      <option>딸</option>
+      <option>사위 예정자</option>
+    </select>
+    <div id="assignList">
+      <div class="assign-row"><span>예식장 계약 · 계약금 검토</span><span class="who-badge">아버지</span></div>
+      <div class="assign-row"><span>예단 · 예물 상견례 조율</span><span class="who-badge">어머니</span></div>
+      <div class="assign-row"><span>스드메 · 청첩장 디자인 선택</span><span class="who-badge">딸</span></div>
+      <div class="assign-row"><span>신혼집 계약 확인</span><span class="who-badge">사위 예정자</span></div>
+    </div>
+  </section>
+
+  <!-- 체크리스트 -->
+  <section class="panel" id="panel-checklist">
+    <h2>체크리스트</h2>
+    <p class="lede">카테고리별 진행률</p>
+    <div class="check-cat">
+      <div class="row"><span>예식장</span><span>0%</span></div>
+      <div class="bar"><div style="width:0%"></div></div>
+    </div>
+    <div class="check-cat">
+      <div class="row"><span>예단 · 예물</span><span>0%</span></div>
+      <div class="bar"><div style="width:0%"></div></div>
+    </div>
+    <div class="check-cat">
+      <div class="row"><span>스드메</span><span>0%</span></div>
+      <div class="bar"><div style="width:0%"></div></div>
+    </div>
+    <div class="check-cat">
+      <div class="row"><span>혼수</span><span>0%</span></div>
+      <div class="bar"><div style="width:0%"></div></div>
+    </div>
+    <p class="note">현재는 항목만 구성된 상태이며, 진행됨에 따라 % 를 갱신하는 구조입니다.</p>
+  </section>
+
+  <!-- 예산 -->
+  <section class="panel" id="panel-budget">
+    <h2>예산</h2>
+    <p class="lede">항목별 예산 계획 (금액 미정 · 추후 입력)</p>
+    <table>
+      <tr><th>카테고리</th><th>항목</th><th>계획</th><th>비고</th></tr>
+      <tr><td>예식장</td><td>대관료</td><td>TBD</td><td>유형 결정 후 확정</td></tr>
+      <tr><td>예단·예물</td><td>-</td><td>TBD</td><td>-</td></tr>
+      <tr><td>스드메</td><td>-</td><td>TBD</td><td>-</td></tr>
+      <tr><td>신혼여행</td><td>-</td><td>TBD</td><td>-</td></tr>
+    </table>
+    <p class="note">증여·세금 관련 세부 내역은 🔒 아버지전용 탭에서 별도 관리합니다.</p>
+  </section>
+
+  <!-- 초대고객 -->
+  <section class="panel" id="panel-guest">
+    <h2>초대고객</h2>
+    <p class="lede">하객 명단 · 관계 관리 (금전 정보는 포함하지 않음)</p>
+    <table>
+      <tr><th>이름</th><th>구분</th><th>관계</th></tr>
+      <tr><td>-</td><td><span class="side-badge">신랑측</span></td><td>-</td></tr>
+      <tr><td>-</td><td><span class="side-badge">신부측</span></td><td>-</td></tr>
+    </table>
+    <p class="note">명단 확정 전 샘플 레이아웃입니다.</p>
+  </section>
+
+  <!-- 가족의견 -->
+  <section class="panel" id="panel-voice">
+    <h2>가족의견</h2>
+    <p class="lede">자유롭게 의견·요청사항을 남겨주세요 (구글폼 연동)</p>
+    <div class="lockbox" style="border-color:var(--line);">
+      <div class="glyph" style="color:var(--accent);">✎</div>
+      <div>의견 남기기 폼으로 이동합니다</div>
+      <button style="background:var(--accent); margin-top:14px;"
+        onclick="window.open('https://forms.google.com/', '_blank')">
+        의견 작성하러 가기 →
+      </button>
+      <div class="hint">※ 실제 구글폼 링크로 교체 필요 (아래 안내 참고)</div>
+    </div>
+  </section>
+
+  <!-- 아버지 전용 -->
+  <section class="panel" id="panel-father">
+    <h2>🔒 아버지 전용</h2>
+    <p class="lede">증여 · 축의금 등 민감 재무 정보</p>
+    <div class="lockbox" id="lockbox">
+      <div class="glyph">🔒</div>
+      <div>접근 코드를 입력하세요</div>
+      <input type="password" id="pw" placeholder="••••">
+      <button onclick="unlock()">열기</button>
+      <div class="hint">※ 프로토타입 화면 시연용이며 실제 보안 기능은 아닙니다. 배포 시 서버 인증으로 교체 필요.</div>
+    </div>
+    <div id="fatherContent">
+      <table>
+        <tr><th>구분</th><th>항목</th><th>금액</th><th>메모</th></tr>
+        <tr><td>증여</td><td>혼인공제</td><td class="amt">TBD</td><td>1억원 한도 검토</td></tr>
+        <tr><td>축의금</td><td>정산 현황</td><td class="amt">TBD</td><td>딸별 별도 집계</td></tr>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  ○○家 결혼 준비 워크샵 · 4단계 정적 프로토타입 · 가족 전용 비공개 페이지
+</footer>
+
+<script>
+  // 딸1/딸2 토글
+  const cards = document.querySelectorAll('.daughter-card');
+  const html = document.documentElement;
+  const lineHong = document.getElementById('lineHong');
+  const lineCheong = document.getElementById('lineCheong');
+
+  function setDaughter(d){
+    html.setAttribute('data-daughter', d);
+    cards.forEach(c => c.classList.toggle('active', c.dataset.d === d));
+    lineHong.style.opacity = d === '1' ? '1' : '0.25';
+    lineCheong.style.opacity = d === '2' ? '1' : '0.25';
+  }
+  cards.forEach(c => c.addEventListener('click', () => setDaughter(c.dataset.d)));
+  setDaughter('1');
+
+  // 탭 전환
+  const tabBtns = document.querySelectorAll('nav.tabs button');
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('section.panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // D-day 계산
+  function ddayLabel(dateStr, el){
+    const target = new Date(dateStr);
+    const today = new Date();
+    const diff = Math.ceil((target - today) / 86400000);
+    el.textContent = diff >= 0 ? ('D-' + diff) : ('D+' + Math.abs(diff));
+  }
+  ddayLabel('2027-06-01', document.getElementById('dday1'));
+  ddayLabel('2028-01-01', document.getElementById('dday2'));
+
+  // 아버지 전용 잠금 해제 (데모용 — 실제 보안 아님)
+  function unlock(){
+    const pw = document.getElementById('pw').value;
+    if(pw.length > 0){
+      document.getElementById('lockbox').style.display = 'none';
+      document.getElementById('fatherContent').style.display = 'block';
+    }
+  }
+</script>
+
+</body>
+</html>
